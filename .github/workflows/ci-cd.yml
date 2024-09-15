@@ -69,4 +69,4 @@ jobs:
       - name: Deploy IM Microservice to Render
         run: |
           # Update and deploy the service using Render CLI
-          render services update Microservice_OfficialProject --branch main
+          render services update Microservice_OfficialProject
