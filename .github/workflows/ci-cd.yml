@@ -47,19 +47,17 @@ jobs:
         run: docker build --cache-from=type=gha --cache-to=type=gha,mode=max -t im-microservice:latest .
         # This builds the Docker image using GitHub's caching mechanism to speed up the build process
 
-      # Step 6: Deploy IM Microservice to Render using Render API
+      # Step 6: Install Render CLI
+      - name: Install Render CLI
+        run: curl -fsSL https://cli.render.com/install | bash  # Installs the latest Render CLI
+
+      # Step 7: Deploy IM Microservice to Render using Render CLI
       - name: Deploy IM Microservice to Render
         env:
-          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}  # Uses your Render API key securely stored in GitHub Secrets
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}  # Uses your Render API key stored in GitHub Secrets
         run: |
-          # Creates a JSON payload file to avoid shell-related JSON formatting issues
-          echo '{"clearCache":false}' > payload.json
+          # Authenticate Render CLI using the API key
+          render login --api-key $RENDER_API_KEY
           
-          # Sends a POST request to Render to deploy the service
-          RESPONSE=$(curl -X POST https://api.render.com/v1/services/srv-crjdu5tumphs73cvlen0/deploys \
-            -H "Authorization: Bearer $RENDER_API_KEY" \
-            -H "Content-Type: application/json" \
-            --data @payload.json)
-          
-          # Outputs the API response for debugging and confirmation
-          echo "Deployment Response: $RESPONSE"
+          # Update and deploy the service using Render CLI
+          render services update YOUR_SERVICE_NAME --branch main
