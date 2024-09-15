@@ -47,7 +47,7 @@ jobs:
         run: docker build --cache-from=type=gha --cache-to=type=gha,mode=max -t im-microservice:latest .
         # This builds the Docker image using GitHub's caching mechanism to speed up the build process
 
-      # Step 6: Install Render CLI Correctly
+      # Step 6: Install Render CLI
       - name: Install Render CLI
         run: |
           # Download the latest Render CLI for Linux
@@ -55,13 +55,15 @@ jobs:
           chmod +x render  # Make the CLI executable
           sudo mv render /usr/local/bin/  # Move the CLI to /usr/local/bin to make it accessible
 
-      # Step 7: Configure Render CLI with API Key
-      - name: Configure Render CLI
+      # Step 7: Set Render CLI Configuration with Environment Variables
+      - name: Set Render CLI Configuration
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}  # Uses your Render API key stored in GitHub Secrets
         run: |
-          # Initialize the configuration non-interactively using the API key
-          render config init --api-key $RENDER_API_KEY --non-interactive
+          # Set up configuration for Render CLI non-interactively
+          export RENDER_API_KEY=${RENDER_API_KEY}
+          export RENDERCLI_PROFILE=default
+          echo "Configured Render CLI with API key."
 
       # Step 8: Deploy IM Microservice to Render using Render CLI
       - name: Deploy IM Microservice to Render
