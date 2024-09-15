@@ -3,57 +3,63 @@ name: CI/CD Pipeline for IM Microservice
 on:
   push:
     branches:
-      - main               # Trigger the workflow on pushes to the main branch
+      - main  # Trigger the workflow when changes are pushed to the main branch
     paths:
-      - 'im_microservice/**'    # Trigger when changes occur in the im_microservice folder
+      - 'im_microservice/**'  # Only run the workflow if changes occur in the im_microservice folder
   pull_request:
     branches:
       - main
     paths:
-      - 'im_microservice/**'
-  workflow_dispatch:            # Allows manual triggering from the Actions tab
+      - 'im_microservice/**'  # Trigger on pull requests to the main branch with changes in im_microservice
+  workflow_dispatch:  # Allows manual triggering of the workflow from GitHub Actions tab
 
 jobs:
   build-and-deploy-im:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  # Use the latest Ubuntu environment provided by GitHub Actions
 
     steps:
       # Step 1: Checkout Code
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2  # Checks out your repository code so the workflow can access it
 
-      # Step 2: Set up Docker Buildx (only needs to be done once per run)
+      # Step 2: Set up Docker Buildx
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v2  # Sets up Docker Buildx, which helps in efficient multi-platform builds
 
-      # Step 3: Cache Python dependencies to speed up requirements installation
+      # Step 3: Cache Python dependencies
       - name: Cache Python dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v3  # Caches Python dependencies to speed up future runs
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      # Step 4: Install Dependencies using the cached environment
+      # Step 4: Install Python Dependencies
       - name: Install Dependencies
-        working-directory: ./im_microservice
+        working-directory: ./im_microservice  # Sets the working directory to your microservice folder
         run: |
-          pip install -r requirements.txt
+          pip install -r requirements.txt  # Installs Python dependencies from requirements.txt
 
-      # Step 5: Build Docker Image using caching to avoid full rebuilds when unnecessary
+      # Step 5: Build Docker Image
       - name: Build Docker Image for IM Microservice
         working-directory: ./im_microservice
         run: docker build --cache-from=type=gha --cache-to=type=gha,mode=max -t im-microservice:latest .
+        # This builds the Docker image using GitHub's caching mechanism to speed up the build process
 
-      # Step 6: Deploy IM Microservice to Render via API
+      # Step 6: Deploy IM Microservice to Render using Render API
       - name: Deploy IM Microservice to Render
         env:
-          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}  # Uses your Render API key securely stored in GitHub Secrets
         run: |
-          RESPONSE=$(curl -X POST https://api.render.com/v1/services/YOUR_SERVICE_ID/deploys \
+          # Creates a JSON payload file to avoid shell-related JSON formatting issues
+          echo '{"clearCache":false}' > payload.json
+          
+          # Sends a POST request to Render to deploy the service
+          RESPONSE=$(curl -X POST https://api.render.com/v1/services/srv-crjdu5tumphs73cvlen0/deploys \
             -H "Authorization: Bearer $RENDER_API_KEY" \
             -H "Content-Type: application/json" \
-            -d '{"clearCache":false}')
+            --data @payload.json)
+          
+          # Outputs the API response for debugging and confirmation
           echo "Deployment Response: $RESPONSE"
-
