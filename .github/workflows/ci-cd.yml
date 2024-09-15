@@ -1,56 +1,36 @@
-name: Multi-Microservice CI/CD Pipeline  # Name of the workflow, visible in GitHub Actions
+name: CI/CD Pipeline for IM Microservice
 
 on:
   push:
-    paths:
-      - 'im_microservice/**'    # Trigger the workflow when changes occur in the im_microservice directory
-      - 'iot_microservice/**'   # Trigger the workflow when changes occur in the iot_microservice directory
     branches:
-      - main                    # Specifies that this workflow triggers only on changes to the 'main' branch
+      - main               # Trigger the workflow on pushes to the main branch
+    paths:
+      - 'im_microservice/**'    # Trigger when changes occur in the im_microservice folder
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'im_microservice/**'
+  workflow_dispatch:            # Allows manual triggering from the Actions tab
 
 jobs:
-  build-and-deploy-im:          # Job name for the IM microservice
-    runs-on: ubuntu-latest      # Specifies the runner environment
-    if: contains(github.event.head_commit.message, 'im_microservice')  # Optional condition to run this job
+  build-and-deploy-im:
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2  # Checks out the repository code for use in the CI/CD pipeline
+        uses: actions/checkout@v2
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2  # Sets up Docker Buildx for multi-platform builds
+        uses: docker/setup-buildx-action@v2
 
       - name: Build Docker Image for IM Microservice
-        working-directory: ./im_microservice  # Changes working directory to im_microservice folder
-        run: docker build -t im-microservice:latest .  # Builds the Docker image from the Dockerfile within the specified folder
+        working-directory: ./im_microservice   # Set the working directory for the IM microservice
+        run: docker build -t im-microservice:latest .
 
-      - name: Deploy IM Microservice
+      - name: Deploy IM Microservice to Render
         env:
-          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}  # Securely accesses Render API key stored in GitHub secrets
-        run: |
-          # Installs Render CLI for deployment
-          curl -fsSL https://cli.render.com/install | bash
-          # Deploys the microservice to Render using Render CLI with necessary options
-          render services update YOUR_IM_SERVICE_NAME --envfile .env --branch main
-
-  build-and-deploy-iot:         # Job name for the IoT microservice
-    runs-on: ubuntu-latest      # Specifies the runner environment
-    if: contains(github.event.head_commit.message, 'iot_microservice')  # Optional condition to run this job
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2  # Checks out the repository code
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2  # Sets up Docker Buildx
-
-      - name: Build Docker Image for IoT Microservice
-        working-directory: ./iot_microservice  # Sets the working directory to iot_microservice folder
-        run: docker build -t iot-microservice:latest .  # Builds the Docker image for IoT microservice
-
-      - name: Deploy IoT Microservice
-        env:
-          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}  # Uses Render API key from GitHub secrets
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}  # Securely accesses the Render API key from GitHub secrets
         run: |
           curl -fsSL https://cli.render.com/install | bash  # Installs Render CLI
-          render services update YOUR_IOT_SERVICE_NAME --envfile .env --branch main  # Deploys the service to Render
+          render services update Microservice_OfficialProject --branch main  # Deploys the service to Render
