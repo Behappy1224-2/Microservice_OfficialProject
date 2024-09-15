@@ -9,9 +9,9 @@ def handle_text_message(event):
     # Use command_processor to classify the command
     task = classify_command(message_text)
     if task == 'turn on the light':
-        reply_text = "Turning on the light!"
+        reply_text = "Turning on the light!!"
     elif task == 'turn off the light':
-        reply_text = "Turning off the light!"
+        reply_text = "Turning off the light~"
     else:
         reply_text = "I didn't understand that command."
 
