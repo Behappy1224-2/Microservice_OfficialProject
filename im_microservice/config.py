@@ -1,4 +1,5 @@
-# config.py
+# config.py 
+# **please set up Environment variable in your deployment**
 import os
 
 # Read the LINE_CHANNEL_ACCESS_TOKEN from environment variables
