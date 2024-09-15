@@ -26,22 +26,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      # Step 3: Cache Render CLI to avoid reinstallation every time
-      - name: Cache Render CLI
-        uses: actions/cache@v3
-        with:
-          path: /usr/local/bin/render
-          key: ${{ runner.os }}-render-cli
-
-      # Step 4: Install Render CLI if not cached
-      - name: Install Render CLI if not cached
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          wget https://github.com/renderinc/render/releases/latest/download/render -O render
-          chmod +x render
-          sudo mv render /usr/local/bin/
-
-      # Step 5: Cache Python dependencies to speed up requirements installation
+      # Step 3: Cache Python dependencies to speed up requirements installation
       - name: Cache Python dependencies
         uses: actions/cache@v3
         with:
@@ -50,19 +35,23 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      # Step 6: Install Dependencies using the cached environment
+      # Step 4: Install Dependencies using the cached environment
       - name: Install Dependencies
         working-directory: ./im_microservice
         run: |
           pip install -r requirements.txt
 
-      # Step 7: Build Docker Image using caching to avoid full rebuilds when unnecessary
+      # Step 5: Build Docker Image using caching to avoid full rebuilds when unnecessary
       - name: Build Docker Image for IM Microservice
         working-directory: ./im_microservice
         run: docker build --cache-from=type=gha --cache-to=type=gha,mode=max -t im-microservice:latest .
 
-      # Step 8: Deploy IM Microservice to Render
+      # Step 6: Deploy IM Microservice to Render via API
       - name: Deploy IM Microservice to Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-        run: render services update Microservice_OfficialProject --branch main
+        run: |
+          curl -X POST https://api.render.com/v1/services/srv-crjdu5tumphs73cvlen0/deploys \
+          -H "Authorization: Bearer $RENDER_API_KEY" \
+          -H "Content-Type: application/json" \
+          -d '{"clearCache": false}'
