@@ -33,11 +33,11 @@ jobs:
           path: /usr/local/bin/render
           key: ${{ runner.os }}-render-cli
 
-      # Step 4: Install Render CLI if not found in cache
+      # Step 4: Install Render CLI if not cached
       - name: Install Render CLI if not cached
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
-          wget https://github.com/render-examples/cli/releases/latest/download/render-linux-amd64 -O render
+          wget https://github.com/renderinc/render/releases/latest/download/render -O render
           chmod +x render
           sudo mv render /usr/local/bin/
 
@@ -50,7 +50,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      # Step 6: Install requirements using the cached environment
+      # Step 6: Install Dependencies using the cached environment
       - name: Install Dependencies
         working-directory: ./im_microservice
         run: |
