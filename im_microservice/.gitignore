@@ -1,0 +1,56 @@
+# Python Bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual Environment
+venv/
+env/
+.venv/
+ENV/
+
+# Logs and Temp Files
+*.log
+*.tmp
+*.swp
+*.swo
+*.swn
+*.bak
+*.pid
+*.seed
+
+# Environment Variables and Configuration
+*.env
+.env
+.env.*
+
+# Pytest and Testing
+.pytest_cache/
+.tox/
+.coverage
+.cache/
+.nox/
+*.cover
+.hypothesis/
+
+# IDE and Editor Configs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Docker
+*.env
+.env
+docker-compose.yml
+Dockerfile.*
+
+# Miscellaneous
+*.sqlite3
