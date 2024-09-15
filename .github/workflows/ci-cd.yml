@@ -60,4 +60,4 @@ jobs:
           render login --api-key $RENDER_API_KEY
           
           # Update and deploy the service using Render CLI
-          render services update YOUR_SERVICE_NAME --branch main
+          render services update Microservice_OfficialProject --branch main
