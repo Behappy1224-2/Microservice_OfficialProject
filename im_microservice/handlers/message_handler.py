@@ -13,6 +13,6 @@ def handle_text_message(event):
     elif task == 'turn off the light':
         reply_text = "Turning off the light!~"
     else:
-        reply_text = "I didn't understand that command  :("
+        reply_text = "I didn't understand that command :("
 
     send_reply_message(event['replyToken'], reply_text)
