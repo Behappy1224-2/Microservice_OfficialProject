@@ -47,9 +47,13 @@ jobs:
         run: docker build --cache-from=type=gha --cache-to=type=gha,mode=max -t im-microservice:latest .
         # This builds the Docker image using GitHub's caching mechanism to speed up the build process
 
-      # Step 6: Install Render CLI
+      # Step 6: Install Render CLI Correctly
       - name: Install Render CLI
-        run: curl -fsSL https://cli.render.com/install | bash  # Installs the latest Render CLI
+        run: |
+          # Download the latest Render CLI for Linux
+          wget https://github.com/render-oss/render-cli/releases/download/v0.1.11/render-linux-x86_64 -O render
+          chmod +x render  # Make the CLI executable
+          sudo mv render /usr/local/bin/  # Move the CLI to /usr/local/bin to make it accessible
 
       # Step 7: Deploy IM Microservice to Render using Render CLI
       - name: Deploy IM Microservice to Render
