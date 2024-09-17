@@ -8,6 +8,7 @@ The service is built using Flask, containerized with Docker, and deployed on Ren
 ## Summary of Major Steps in This Project
 1.Microservice Development:
 Design Microservice Structure: We structured the microservice with key components like app.py, message_handler.py, api_client.py, and command_processor.py,etc.
+
 2.Containerization with Docker:
 Build Dockerfile and Local Testing: Successfully built and tested the Docker image locally, validating that the microservice functions are correct and interacts well with webhooks and other components.
 
