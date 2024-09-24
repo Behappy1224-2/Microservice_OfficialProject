@@ -54,3 +54,6 @@ Dockerfile.*
 
 # Miscellaneous
 *.sqlite3
+
+#Project file
+Step-by-step.txt
