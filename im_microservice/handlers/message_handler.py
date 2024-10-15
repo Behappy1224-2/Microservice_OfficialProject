@@ -19,6 +19,6 @@ def handle_text_message(event):
         #requests.post(control_url, json={'action': 'turn off the light'})
         reply_text = "Turning off the light~"
     else:
-        reply_text = "Sry! I can't understand this command!!! :("
+        reply_text = "Sry! I can't understand this command! :("
 
     send_reply_message(event['replyToken'], reply_text)
