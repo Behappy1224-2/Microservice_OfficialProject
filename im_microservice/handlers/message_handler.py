@@ -1,6 +1,6 @@
 from .api_client import send_reply_message
 from .command_processor import classify_command
-from ...iot_test.iot import turn_on_light, turn_off_light
+#from iot_test.iot import turn_on_light, turn_off_light
 
 def handle_text_message(event):
     user_id = event['source']['userId']
